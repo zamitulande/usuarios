@@ -1,0 +1,21 @@
+INSERT INTO user(id, identification, name) VALUES(1, '25', 'juan');
+INSERT INTO user(id, identification, name) VALUES(2, '45', 'camilo');
+INSERT INTO user(id, identification, name) VALUES(3, '28', 'pedro');
+INSERT INTO user(id, identification, name) VALUES(4, '35', 'maria');
+INSERT INTO user(id, identification, name) VALUES(5, '20', 'laura');
+INSERT INTO user(id, identification, name) VALUES(6, '30', 'pamela');
+INSERT INTO user(id, identification, name) VALUES(7, '29', 'mariano');
+INSERT INTO user(id, identification, name) VALUES(8, '32', 'lucas');
+INSERT INTO user(id, identification, name) VALUES(9, '11', 'mateo');
+
+INSERT INTO testimony(id, category, section, id_user) VALUES(1, 'Pandemia', 'Muerte', 5);
+INSERT INTO testimony(id, category, section, id_user) VALUES(2, 'Conflicto', 'Secuestro', 6);
+INSERT INTO testimony(id, category, section, id_user) VALUES(3, 'Cultura', 'Mitos', 4);
+INSERT INTO testimony(id, category, section, id_user) VALUES(4, 'Pandemia', 'Secuelas', 7);
+INSERT INTO testimony(id, category, section, id_user) VALUES(5, 'Pandemia', 'Muerte', 6);
+INSERT INTO testimony(id, category, section, id_user) VALUES(6, 'Cultura', 'Leyendas', 1);
+INSERT INTO testimony(id, category, section, id_user) VALUES(7, 'Cultura', 'Leyendas', 1);
+INSERT INTO testimony(id, category, section, id_user) VALUES(8, 'Pandemia', 'Secuelas', 2);
+INSERT INTO testimony(id, category, section, id_user) VALUES(9, 'Cultura', 'Mitos', 2);
+INSERT INTO testimony(id, category, section, id_user) VALUES(10, 'Conflicto', 'Extorcion', 3);
+INSERT INTO testimony(id, category, section, id_user) VALUES(11, 'Conflicto', 'Extorcion', 3);
