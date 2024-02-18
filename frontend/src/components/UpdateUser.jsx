@@ -14,13 +14,14 @@ const UpdateUser = () => {
 
   const [user, setUser] = useState({
     name: '',
-    identification: ''
+    identification: 0
   })
   const { name, identification, id } = formEditar;
 
   const handleCloseModal = () => {
     dispatch(updateUser(!openModal))
   }
+  
 
   useEffect(()=>{
     setUser(onEdit)
@@ -32,12 +33,14 @@ const UpdateUser = () => {
       [e.target.name] : e.target.value
     })
   }
+ 
   const handleUpdate = (e) => {
     e.preventDefault();
     clienteAxios.put(`user/update/${formEditar.id}`, user)
       .then((res) => {
         const editdUser = res.data;
         const updatedUsers = stateUser.map(users => {
+          console.log(users)
           if (users.id === editdUser.id) {
             return editdUser;
           } else {

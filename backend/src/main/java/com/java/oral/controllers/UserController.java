@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.java.oral.controllers.Dto.UserDTO;
 import com.java.oral.entities.User;
+import com.java.oral.error.UserNotFoundException;
 import com.java.oral.service.IUserService;
 
 @RestController
@@ -48,7 +50,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/findall")
+    @GetMapping("/")
     public ResponseEntity<?> findAll() {
         List<UserDTO> userList = iUserService.findAll()
                 .stream()
@@ -63,11 +65,8 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<UserDTO> save(@RequestBody UserDTO userDTO) throws URISyntaxException {
+    public ResponseEntity<UserDTO> save(@Validated @RequestBody UserDTO userDTO) throws URISyntaxException {
         System.out.println(userDTO);
-        if (userDTO.getName().isBlank() || userDTO.getIdentification().isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
 
         User savedUser = iUserService.save(User.builder()
                 .name(userDTO.getName())
@@ -83,12 +82,11 @@ public class UserController {
     }
 
     @GetMapping("/find/identification/{identification}")
-    public ResponseEntity<?> findByIdentification(@PathVariable String identification) {
+    public ResponseEntity<?> findByIdentification(@PathVariable Integer identification) throws UserNotFoundException{
         Optional<User> userOption = iUserService.findByIdentification(identification);
 
         if (userOption.isPresent()) {
             User user = userOption.get();
-
             UserDTO userDTO = UserDTO.builder()
                     .id(user.getId())
                     .name(user.getName())
@@ -97,9 +95,11 @@ public class UserController {
                     .build();
 
             return ResponseEntity.ok(userDTO);
+        }else{
+            throw new UserNotFoundException("Usuario no encontrado");
         }
 
-        return ResponseEntity.notFound().build();
+        
     }
 
     @PutMapping("/update/{id}")

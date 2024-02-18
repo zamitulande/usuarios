@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.java.oral.entities.User;
+import com.java.oral.error.UserNotFoundException;
 
 public interface IUserDAO {
 
@@ -15,5 +16,5 @@ public interface IUserDAO {
 
     void deleteById(Long id);
 
-    Optional<User> findByIdentification(String identification);
+    Optional<User> findByIdentification(Integer identification) throws UserNotFoundException;
 }

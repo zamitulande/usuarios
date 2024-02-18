@@ -11,7 +11,7 @@ const FormUser = () => {
     const openModal = useSelector((state) => state.user.isUpdate)
 
     const [name, setName] = useState(" ")
-    const [identification, setIdentification] = useState(" ")
+    const [identification, setIdentification] = useState(0)
 
 
     const handleSubmit = (e) => {
@@ -20,8 +20,10 @@ const FormUser = () => {
             name: name,
             identification: identification
         }
+        console.log(newUser)
         clienteAxios.post('user/save', newUser)
             .then(res => {
+                console.log(res.data)
                 dispatch(addUser([...stateUser, res.data]))
             })
             .catch(error => {

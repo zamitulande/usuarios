@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.java.oral.entities.User;
+import com.java.oral.error.UserNotFoundException;
 import com.java.oral.persistence.IUserDAO;
 import com.java.oral.service.IUserService;
 
@@ -38,7 +39,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<User> findByIdentification(String identification) {
+    public Optional<User>  findByIdentification(Integer identification) throws UserNotFoundException {
         return iUserDAO.findByIdentification(identification);
     }
     

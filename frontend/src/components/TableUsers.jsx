@@ -9,9 +9,13 @@ const TableUsers = () => {
     const stateUser = useSelector((state) => state.user.users)
     const openModal = useSelector((state) => state.user.isUpdate)
 
+    const [shareUser, setShareUser] = useState('');
+    const [messageNotFound, setMessageNotFound] = useState('')
+    const [foud, setFound] = useState({})
+
 
     useEffect(() => {
-        clienteAxios.get('user/findall')
+        clienteAxios.get('user/')
             .then(res => {
                 const userData = res.data;
                 dispatch(listUser(userData));
@@ -28,6 +32,7 @@ const TableUsers = () => {
             if (response.status === 200) {
                 const newUsers = stateUser.filter(user => user.id !== id);
                 dispatch(deleteUser(newUsers))
+                dispatch(listUser(stateUser));
             } else {
                 console.log('failed to delete user')
             }
@@ -43,8 +48,34 @@ const TableUsers = () => {
         
     }
 
+    const handleSubmit = (e)=>{
+        e.preventDefault();
+        clienteAxios.get(`user/find/identification/${shareUser}`)
+        .then(res => {
+            const filtrado = stateUser.filter(user => user.identification == shareUser);
+            if(filtrado){
+                dispatch(listUser(filtrado));
+            }
+           
+        })
+        .catch(error => {
+           const notFound = error.response.data;
+           const {message} = notFound;
+           setMessageNotFound(message)
+        })
+    }
+    
     return (
-        <table>
+        <>
+             <form onSubmit={handleSubmit}>
+                <span style={{backgroundColor:'red'}}>{messageNotFound}</span>
+                <label>
+                    search
+                    <input type="text" name="shareUser" value={shareUser} onChange={(e => setShareUser(e.target.value))} />
+                </label>
+                <button type="submit">search</button>
+            </form>
+            <table>
             <thead>
                 <tr>
                     <th>Name</th>
@@ -63,6 +94,7 @@ const TableUsers = () => {
                 ))}
             </tbody>
         </table>
+        </>
     )
 }
 
