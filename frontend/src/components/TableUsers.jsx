@@ -12,17 +12,33 @@ const TableUsers = () => {
     const [messageNotFound, setMessageNotFound] = useState('')
     const [found, setFound] = useState([])
 
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
     useEffect(() => {
-        clienteAxios.get('user/')
+        clienteAxios.get(`user/?page=${currentPage}&size=10`)
             .then(res => {
-                setFound(res.data);
-                dispatch(listUser(res.data));
+                setFound(res.data.content);
+                dispatch(listUser(res.data.content));
+                setTotalPages(res.data.totalPages);
             })
             .catch(error => {
                 console.log("error fetching user data " + error)
             })
 
-    }, [])
+    }, [currentPage])
+    
+    const nextPage = () => {
+        if (currentPage < totalPages - 1) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
@@ -96,6 +112,8 @@ const TableUsers = () => {
                         ))}
                     </tbody>
                 </table>}
+            <button onClick={prevPage} disabled={currentPage === 0}>Previous Page</button>
+            <button onClick={nextPage} disabled={currentPage === totalPages - 1}>Next Page</button>
         </>
     )
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.java.oral.entities.User;
@@ -19,8 +21,8 @@ public class UserDAOImpl implements IUserDAO {
     private UserRepository userRepository;
 
     @Override
-    public List<User> findAll() {
-        return (List<User>) userRepository.findAll();
+    public Page<User> findAll(Pageable pageable) {
+        return (Page<User>) userRepository.findAll(pageable);
     }
 
     @Override

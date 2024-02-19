@@ -3,12 +3,15 @@ package com.java.oral.persistence;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.java.oral.entities.User;
 import com.java.oral.error.UserNotFoundException;
 
 public interface IUserDAO {
 
-    List<User> findAll();
+    Page<User> findAll(Pageable pageable);
 
     Optional<User> findById(Long id);
 
