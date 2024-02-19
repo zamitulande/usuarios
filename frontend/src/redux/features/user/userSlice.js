@@ -12,6 +12,7 @@ export const userSlice = createSlice({
     reducers:{
         listUser: (state, action )=> {
             state.users= action.payload  
+            //console.log(action.payload)
         },
         addUser: (state, action)=>{
             state.users = action.payload

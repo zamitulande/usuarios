@@ -40,7 +40,6 @@ const UpdateUser = () => {
       .then((res) => {
         const editdUser = res.data;
         const updatedUsers = stateUser.map(users => {
-          console.log(users)
           if (users.id === editdUser.id) {
             return editdUser;
           } else {

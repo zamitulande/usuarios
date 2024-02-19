@@ -39,8 +39,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<User>  findByIdentification(Integer identification) throws UserNotFoundException {
-        return iUserDAO.findByIdentification(identification);
+    public List<User>  findByPartialIdentification(String identification) throws UserNotFoundException {
+        return iUserDAO.findByPartialIdentification(identification);
     }
     
 

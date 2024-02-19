@@ -18,7 +18,7 @@ public class UserDTO {
     
 
     private Long id;
-    private Integer identification;
+    private String identification;
     private String name;    
     
     private List<Testimony> testimonies = new ArrayList<>();

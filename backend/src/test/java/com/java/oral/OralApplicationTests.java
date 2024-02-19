@@ -1,13 +1,13 @@
-// package com.java.oral;
+package com.java.oral;
 
-// import org.junit.jupiter.api.Test;
-// import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-// @SpringBootTest
-// class OralApplicationTests {
+@SpringBootTest
+class OralApplicationTests {
 
-// 	@Test
-// 	void contextLoads() {
-// 	}
+	@Test
+	void contextLoads() {
+	}
 
-// }
+}

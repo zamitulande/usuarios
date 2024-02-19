@@ -39,8 +39,8 @@ public class UserDAOImpl implements IUserDAO {
     }
 
     @Override
-    public Optional<User> findByIdentification(Integer identification)  throws UserNotFoundException{
-       return userRepository.findByIdentification(identification);
+    public List<User> findByPartialIdentification(String identification)  throws UserNotFoundException{
+       return userRepository.findByPartialIdentification(identification);
     }
 
 }

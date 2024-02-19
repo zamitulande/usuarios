@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser, formUserEdit, listUser, updateUser } from '../redux/features/user/userSlice';
+import { formUserEdit, listUser, updateUser } from '../redux/features/user/userSlice';
 import clienteAxios from '../config/Axios'
 
 const TableUsers = () => {
@@ -9,16 +9,14 @@ const TableUsers = () => {
     const stateUser = useSelector((state) => state.user.users)
     const openModal = useSelector((state) => state.user.isUpdate)
 
-    const [shareUser, setShareUser] = useState('');
     const [messageNotFound, setMessageNotFound] = useState('')
-    const [foud, setFound] = useState({})
-
+    const [found, setFound] = useState([])
 
     useEffect(() => {
         clienteAxios.get('user/')
             .then(res => {
-                const userData = res.data;
-                dispatch(listUser(userData));
+                setFound(res.data);
+                dispatch(listUser(res.data));
             })
             .catch(error => {
                 console.log("error fetching user data " + error)
@@ -31,8 +29,7 @@ const TableUsers = () => {
             const response = await clienteAxios.delete(`user/delete/${id}`);
             if (response.status === 200) {
                 const newUsers = stateUser.filter(user => user.id !== id);
-                dispatch(deleteUser(newUsers))
-                dispatch(listUser(stateUser));
+                dispatch(listUser(newUsers));
             } else {
                 console.log('failed to delete user')
             }
@@ -40,60 +37,65 @@ const TableUsers = () => {
             console.error('error deleting user' + error)
         }
     }
+
     const handleOpenModal = (user) => {
-        
-            dispatch(updateUser(user))
-            dispatch(formUserEdit(user))
-            dispatch(updateUser(!openModal))
-        
+        dispatch(updateUser(user))
+        dispatch(formUserEdit(user))
+        dispatch(updateUser(!openModal))
+
     }
 
-    const handleSubmit = (e)=>{
-        e.preventDefault();
-        clienteAxios.get(`user/find/identification/${shareUser}`)
-        .then(res => {
-            const filtrado = stateUser.filter(user => user.identification == shareUser);
-            if(filtrado){
-                dispatch(listUser(filtrado));
+    const searchIdentification = async (searchTerm) => {
+        if (searchTerm.length > 0) {
+            try {
+                const response = await clienteAxios.get(`user/find/identification/${searchTerm}`);
+                dispatch(listUser(response.data));
+                if (messageNotFound) {
+                    setMessageNotFound('')
+                }
+            } catch (error) {
+                setMessageNotFound(error.response.data.message);
             }
-           
-        })
-        .catch(error => {
-           const notFound = error.response.data;
-           const {message} = notFound;
-           setMessageNotFound(message)
-        })
+        }
     }
-    
+
+    const onChange = (e) => {
+        searchIdentification(e.target.value);
+        if (e.target.value.trim() === "") {
+            dispatch(listUser(found));
+        }
+    }
     return (
         <>
-             <form onSubmit={handleSubmit}>
-                <span style={{backgroundColor:'red'}}>{messageNotFound}</span>
+            <form >
+
                 <label>
                     search
-                    <input type="text" name="shareUser" value={shareUser} onChange={(e => setShareUser(e.target.value))} />
+                    <input type="text" name="shareUser" onChange={onChange} />
                 </label>
-                <button type="submit">search</button>
             </form>
-            <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Identification</th>
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                {stateUser.map((user) => (
-                    <tr key={user.id}>
-                        <td>{user.name}</td>
-                        <td>{user.identification}</td>
-                        <td><button onClick={() => handleDelete(user.id)}>delete</button></td>
-                        <td><button onClick={() => handleOpenModal(user)}>update</button></td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+            {messageNotFound ?
+                <span>{messageNotFound}</span>
+                :
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Identification</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {stateUser.map((user) => (
+                            <tr key={user.id}>
+                                <td>{user.name}</td>
+                                <td>{user.identification}</td>
+                                <td><button onClick={() => handleDelete(user.id)}>delete</button></td>
+                                <td><button onClick={() => handleOpenModal(user)}>update</button></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>}
         </>
     )
 }

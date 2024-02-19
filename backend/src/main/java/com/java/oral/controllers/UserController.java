@@ -3,6 +3,7 @@ package com.java.oral.controllers;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,24 +83,27 @@ public class UserController {
     }
 
     @GetMapping("/find/identification/{identification}")
-    public ResponseEntity<?> findByIdentification(@PathVariable Integer identification) throws UserNotFoundException{
-        Optional<User> userOption = iUserService.findByIdentification(identification);
-
-        if (userOption.isPresent()) {
-            User user = userOption.get();
-            UserDTO userDTO = UserDTO.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .identification(user.getIdentification())
-                    .testimonies(user.getTestimonies())
-                    .build();
-
-            return ResponseEntity.ok(userDTO);
-        }else{
-            throw new UserNotFoundException("Usuario no encontrado");
-        }
-
+    public ResponseEntity<?> findByIdentification(@PathVariable String identification) throws UserNotFoundException {
         
+        try {
+            List<User> users = iUserService.findByPartialIdentification(identification);
+            List<UserDTO> userDTOs = users.stream()
+                    .map(user -> UserDTO.builder()
+                            .id(user.getId())
+                            .name(user.getName())
+                            .identification(user.getIdentification())
+                            .testimonies(user.getTestimonies())
+                            .build())
+                    .collect(Collectors.toList());
+            if (!userDTOs.isEmpty()) {
+                return ResponseEntity.ok(userDTOs);
+            } else {
+                throw new UserNotFoundException("Usuario no encontrado");
+            }
+        } catch (NumberFormatException e) {
+            // Si la identificación no es un número válido, lanzar una excepción
+            throw new UserNotFoundException("Identificación no válida");
+        }
     }
 
     @PutMapping("/update/{id}")
@@ -117,7 +121,6 @@ public class UserController {
             updatedUserDTO.setName(user.getName());
             updatedUserDTO.setIdentification(user.getIdentification());
 
-        
             return ResponseEntity.ok(updatedUserDTO);
         }
         return ResponseEntity.notFound().build();

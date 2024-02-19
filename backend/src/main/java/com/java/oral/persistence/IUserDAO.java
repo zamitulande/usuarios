@@ -16,5 +16,5 @@ public interface IUserDAO {
 
     void deleteById(Long id);
 
-    Optional<User> findByIdentification(Integer identification) throws UserNotFoundException;
+    List<User> findByPartialIdentification(String identification) throws UserNotFoundException;
 }

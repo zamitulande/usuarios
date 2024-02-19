@@ -33,7 +33,7 @@ public class User {
     private Long id;
 
     @NotNull(message = "Campo no debe estar vacio")
-    private Integer identification;
+    private String identification;
     private String name;
 
     
