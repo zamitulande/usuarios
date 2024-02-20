@@ -12,31 +12,42 @@ const UpdateUser = () => {
   const onEdit = useSelector((state) => state.user.onEdit)
   const stateUser = useSelector((state) => state.user.users)
 
+
+
   const [user, setUser] = useState({
     name: '',
-    identification: 0
+    identification: ''
   })
-  const { name, identification, id } = formEditar;
 
   const handleCloseModal = () => {
     dispatch(updateUser(!openModal))
   }
-  
 
-  useEffect(()=>{
-    setUser(onEdit)
+
+  useEffect(() => {
+    if (onEdit) {
+      setUser(onEdit);
+    }
   }, [onEdit])
 
   const handleOnChange = (e) => {
-        setUser({
-      ...formEditar,
-      [e.target.name] : e.target.value
-    })
+    const { name, value } = e.target;
+    setUser(prevUser => ({
+      ...prevUser,
+      [name]: value
+    }));
   }
- 
+
+
   const handleUpdate = (e) => {
     e.preventDefault();
-    clienteAxios.put(`user/update/${formEditar.id}`, user)
+    
+    const updatedUser = { ...user }; 
+    updatedUser.name = user.name || formEditar.name; 
+    updatedUser.identification = user.identification || formEditar.identification;
+
+
+    clienteAxios.put(`user/update/${formEditar.id}`, updatedUser)
       .then((res) => {
         const editdUser = res.data;
         const updatedUsers = stateUser.map(users => {
@@ -65,11 +76,11 @@ const UpdateUser = () => {
         <form onSubmit={handleUpdate}>
           <label>
             Person Name:
-            <input type="text" name="name" defaultValue={name} onChange={handleOnChange} />
+            <input type="text" name="name" defaultValue={formEditar.name} onChange={handleOnChange} />
           </label>
           <label>
             Person identification:
-            <input type="text" name="identification" defaultValue={identification} onChange={handleOnChange}/>
+            <input type="text" name="identification" defaultValue={formEditar.identification} onChange={handleOnChange} />
           </label>
           <button type="submit">Update</button>
         </form>

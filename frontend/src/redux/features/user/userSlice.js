@@ -6,7 +6,7 @@ export const userSlice = createSlice({
     initialState: {
         users: [],
         isUpdate: false,
-        formEdit: null,
+        formEdit: [],
         onEdit:null
     },   
     reducers:{
@@ -27,6 +27,7 @@ export const userSlice = createSlice({
         },
         editing: (state, action) => {
             state.onEdit = action.payload
+            console.log(action.payload)
         }
         
        

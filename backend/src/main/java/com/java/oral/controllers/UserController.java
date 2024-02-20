@@ -1,9 +1,7 @@
 package com.java.oral.controllers;
 
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,7 +55,6 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<UserDTO> save(@Validated @RequestBody UserDTO userDTO) throws URISyntaxException {
-        System.out.println(userDTO);
 
         User savedUser = iUserService.save(User.builder()
                 .name(userDTO.getName())
@@ -91,7 +88,7 @@ public class UserController {
     @GetMapping("/find/identification/{identification}")
     public ResponseEntity<Page<UserDTO>> findByIdentification(@PathVariable String identification, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) throws UserNotFoundException {
-                
+
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<User> users = iUserService.findByPartialIdentification(identification, pageable);
@@ -118,7 +115,7 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         Optional<User> userOption = iUserService.findById(id);
-
+        System.out.println(userDTO);
         if (userOption.isPresent()) {
             User user = userOption.get();
             user.setName(userDTO.getName());

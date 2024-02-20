@@ -62,25 +62,25 @@ const TableUsers = () => {
     }
 
     const searchIdentification = (searchTerm) => {
-
-        clienteAxios.get(`user/find/identification/${searchTerm}?page=${currentPage}&size=10`)
-            .then(res => {
-                dispatch(listUser(res.data.content));
-                setTotalPages(res.data.totalPages);
-                if (messageNotFound) {
-                    setMessageNotFound('')
-                }
-            })
-            .catch(error => {
-                setMessageNotFound(error.response.data.message);
-            })
+        if (searchTerm) {
+            clienteAxios.get(`user/find/identification/${searchTerm}?page=${currentPage}&size=10`)
+                .then(res => {
+                    dispatch(listUser(res.data.content));
+                    setTotalPages(res.data.totalPages);
+                    if (messageNotFound) {
+                        setMessageNotFound('')
+                    }
+                })
+                .catch(error => {
+                    setMessageNotFound(error.response.data.message);
+                })
+        }
     }
 
     const onChange = (e) => {
         searchIdentification(e.target.value);
         if (e.target.value.trim() === "") {
             dispatch(listUser(found));
-            console.log('quedo vacio')
         }
     }
     return (
