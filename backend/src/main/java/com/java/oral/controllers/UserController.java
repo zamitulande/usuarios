@@ -84,25 +84,28 @@ public class UserController {
                         .identification(user.getIdentification())
                         .testimonies(user.getTestimonies())
                         .build());
-                        System.out.println(userpage);
+        System.out.println(userpage);
         return ResponseEntity.ok(userpage);
     }
 
     @GetMapping("/find/identification/{identification}")
-    public ResponseEntity<?> findByIdentification(@PathVariable String identification) throws UserNotFoundException {
-
+    public ResponseEntity<Page<UserDTO>> findByIdentification(@PathVariable String identification, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) throws UserNotFoundException {
+                
         try {
-            List<User> users = iUserService.findByPartialIdentification(identification);
-            List<UserDTO> userDTOs = users.stream()
+            Pageable pageable = PageRequest.of(page, size);
+            Page<User> users = iUserService.findByPartialIdentification(identification, pageable);
+            
+            Page<UserDTO> userDTOsPage = users
                     .map(user -> UserDTO.builder()
                             .id(user.getId())
                             .name(user.getName())
                             .identification(user.getIdentification())
                             .testimonies(user.getTestimonies())
-                            .build())
-                    .collect(Collectors.toList());
-            if (!userDTOs.isEmpty()) {
-                return ResponseEntity.ok(userDTOs);
+                            .build());
+                System.out.println(userDTOsPage);
+            if (!userDTOsPage.isEmpty()) {
+                return ResponseEntity.ok(userDTOsPage);
             } else {
                 throw new UserNotFoundException("Usuario no encontrado");
             }

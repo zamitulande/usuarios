@@ -27,7 +27,7 @@ const TableUsers = () => {
             })
 
     }, [currentPage])
-    
+
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage(currentPage + 1);
@@ -61,24 +61,26 @@ const TableUsers = () => {
 
     }
 
-    const searchIdentification = async (searchTerm) => {
-        if (searchTerm.length > 0) {
-            try {
-                const response = await clienteAxios.get(`user/find/identification/${searchTerm}`);
-                dispatch(listUser(response.data));
+    const searchIdentification = (searchTerm) => {
+
+        clienteAxios.get(`user/find/identification/${searchTerm}?page=${currentPage}&size=10`)
+            .then(res => {
+                dispatch(listUser(res.data.content));
+                setTotalPages(res.data.totalPages);
                 if (messageNotFound) {
                     setMessageNotFound('')
                 }
-            } catch (error) {
+            })
+            .catch(error => {
                 setMessageNotFound(error.response.data.message);
-            }
-        }
+            })
     }
 
     const onChange = (e) => {
         searchIdentification(e.target.value);
         if (e.target.value.trim() === "") {
             dispatch(listUser(found));
+            console.log('quedo vacio')
         }
     }
     return (

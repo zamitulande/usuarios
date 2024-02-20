@@ -19,5 +19,5 @@ public interface IUserDAO {
 
     void deleteById(Long id);
 
-    List<User> findByPartialIdentification(String identification) throws UserNotFoundException;
+    Page<User> findByPartialIdentification(String identification, Pageable pageable) throws UserNotFoundException;
 }

@@ -1,6 +1,5 @@
 package com.java.oral.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +40,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User>  findByPartialIdentification(String identification) throws UserNotFoundException {
-        return iUserDAO.findByPartialIdentification(identification);
+    public Page<User>  findByPartialIdentification(String identification, Pageable pageable) throws UserNotFoundException {
+        return iUserDAO.findByPartialIdentification(identification, pageable);
     }
     
 

@@ -41,8 +41,8 @@ public class UserDAOImpl implements IUserDAO {
     }
 
     @Override
-    public List<User> findByPartialIdentification(String identification)  throws UserNotFoundException{
-       return userRepository.findByPartialIdentification(identification);
+    public Page<User> findByPartialIdentification(String identification, Pageable pageable)  throws UserNotFoundException{
+       return userRepository.findByPartialIdentification(identification, pageable);
     }
 
 }
