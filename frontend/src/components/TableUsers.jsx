@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { formUserEdit, listUser, updateUser } from '../redux/features/user/userSlice';
-import clienteAxios from '../config/Axios'
+import clienteAxios from '../config/Axios';
+import Swal from 'sweetalert2';
 
 const TableUsers = () => {
 
@@ -11,6 +12,9 @@ const TableUsers = () => {
 
     const [messageNotFound, setMessageNotFound] = useState('')
     const [found, setFound] = useState([])
+    const [newUsers, setNewUsers]= useState([])
+
+    const [searchTerm, setSearchTerm] = useState('');
 
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -28,6 +32,13 @@ const TableUsers = () => {
 
     }, [currentPage])
 
+    useEffect(() => {
+        // Si el término de búsqueda está vacío, carga la lista inicial
+        if (!searchTerm.trim()) {
+            setCurrentPage(0);
+        }
+    }, [searchTerm]);
+
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage(currentPage + 1);
@@ -44,8 +55,30 @@ const TableUsers = () => {
         try {
             const response = await clienteAxios.delete(`user/delete/${id}`);
             if (response.status === 200) {
-                const newUsers = stateUser.filter(user => user.id !== id);
-                dispatch(listUser(newUsers));
+                const userFilter = stateUser.filter(user => user.id !== id);
+                Swal.fire({
+                    title: "Estas seguro?",
+                    text: "Esta accion no se puede revertir!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Si, Eliminar",
+                    cancelButtonText: "Cancelar"
+                  }).then((result) => {
+                    if (result.isConfirmed) 
+                    { Swal.fire({
+                        title: "Borrado!",
+                        text: "El usuario ha sido borrado",
+                        icon: "success"
+                      });
+                    dispatch(listUser(userFilter));
+                    if(newUsers){
+                       dispatch(listUser(found));
+                       setSearchTerm('')
+                    }                                
+                    }
+                  });                
             } else {
                 console.log('failed to delete user')
             }
@@ -58,7 +91,6 @@ const TableUsers = () => {
         dispatch(updateUser(user))
         dispatch(formUserEdit(user))
         dispatch(updateUser(!openModal))
-
     }
 
     const searchIdentification = (searchTerm) => {
@@ -73,28 +105,33 @@ const TableUsers = () => {
                 })
                 .catch(error => {
                     setMessageNotFound(error.response.data.message);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops... user not found",
+                        text: "search again!"
+                      });
+                      dispatch(listUser(found));
+                       setSearchTerm('')
                 })
         }
     }
 
     const onChange = (e) => {
+        setSearchTerm(e.target.value)
         searchIdentification(e.target.value);
         if (e.target.value.trim() === "") {
+            setCurrentPage(0);
             dispatch(listUser(found));
         }
     }
     return (
         <>
             <form >
-
                 <label>
                     search
-                    <input type="text" name="shareUser" onChange={onChange} />
+                    <input type="text" name="shareUser" value={searchTerm} onChange={onChange} />
                 </label>
             </form>
-            {messageNotFound ?
-                <span>{messageNotFound}</span>
-                :
                 <table>
                     <thead>
                         <tr>
@@ -113,7 +150,7 @@ const TableUsers = () => {
                             </tr>
                         ))}
                     </tbody>
-                </table>}
+                </table>
             <button onClick={prevPage} disabled={currentPage === 0}>Previous Page</button>
             <button onClick={nextPage} disabled={currentPage === totalPages - 1}>Next Page</button>
         </>

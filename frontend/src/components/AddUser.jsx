@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addUser } from '../redux/features/user/userSlice';
 import clienteAxios from '../config/Axios'
 import UpdateUser from './UpdateUser';
+import Swal from 'sweetalert2';
 
 const FormUser = () => {
 
@@ -13,17 +14,35 @@ const FormUser = () => {
     const [name, setName] = useState(" ")
     const [identification, setIdentification] = useState("")
 
+    const [user, setUser] = useState({
+        name: '',
+        identification: ''
+    })
+
+    const handleOnChange = (e) => {
+        const { name, value } = e.target;
+        setUser(prevUser => ({
+            ...prevUser,
+            [name]: value
+        }));
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const newUser = {
-            name: name,
-            identification: identification
-        }
-        console.log(newUser)
-        clienteAxios.post('user/save', newUser)
+        clienteAxios.post('user/save', user)
             .then(res => {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Usuario ha sido guardado",
+                    showConfirmButton: false,
+                    timer: 2500
+                });
                 dispatch(addUser([...stateUser, res.data]))
+                setUser({
+                    name: '',
+                    identification: ''
+                })
             })
             .catch(error => {
                 console.log("error fetching user data " + error)
@@ -36,11 +55,11 @@ const FormUser = () => {
             <form onSubmit={handleSubmit}>
                 <label>
                     Person Name:
-                    <input type="text" name="name" value={name} onChange={(e => setName(e.target.value))} />
+                    <input type="text" name="name" value={user.name} onChange={handleOnChange} />
                 </label>
                 <label>
                     Person identification:
-                    <input type="text" name="identification" value={identification} onChange={(e => setIdentification(e.target.value))} />
+                    <input type="text" name="identification" value={user.identification} onChange={handleOnChange} />
                 </label>
                 <button type="submit">Add</button>
             </form>

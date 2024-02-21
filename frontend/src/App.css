@@ -40,3 +40,7 @@
 .read-the-docs {
   color: #888;
 }
+
+.my-swal {
+  z-index: 999999 !important; /* Ajusta el z-index según sea necesario */
+}
