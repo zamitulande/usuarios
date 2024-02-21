@@ -115,7 +115,6 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         Optional<User> userOption = iUserService.findById(id);
-        System.out.println(userDTO);
         if (userOption.isPresent()) {
             User user = userOption.get();
             user.setName(userDTO.getName());

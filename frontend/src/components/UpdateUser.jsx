@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Box, Button, Modal } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import clienteAxios from '../config/Axios'
-import { addUser, updateUser } from '../redux/features/user/userSlice';
+import { addUser, searhInput, updateUser } from '../redux/features/user/userSlice';
 import Swal from 'sweetalert2';
 
 const UpdateUser = () => {
@@ -10,7 +10,6 @@ const UpdateUser = () => {
   const dispatch = useDispatch();
   const openModal = useSelector((state) => state.user.isUpdate)
   const formEditar = useSelector((state) => state.user.formEdit)
-  const onEdit = useSelector((state) => state.user.onEdit)
   const stateUser = useSelector((state) => state.user.users)
 
   const [user, setUser] = useState({
@@ -23,10 +22,6 @@ const UpdateUser = () => {
   const handleCloseModal = () => {
     dispatch(updateUser(!openModal))
   }
-
-  useEffect(() => {    
-      setUser(onEdit);
-  }, [onEdit])
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -72,6 +67,7 @@ const UpdateUser = () => {
             Swal.fire("Guardado!", "", "success");
             dispatch(addUser(updatedUsers));
             handleCloseModal();
+            dispatch(searhInput(''))
           } else if (result.isDenied) {
             Swal.fire("Cambios no guardados", "", "info");
             handleCloseModal();

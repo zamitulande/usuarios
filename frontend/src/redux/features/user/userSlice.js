@@ -7,7 +7,7 @@ export const userSlice = createSlice({
         users: [],
         isUpdate: false,
         formEdit: [],
-        onEdit:null
+        searchTerm: ''
     },   
     reducers:{
         listUser: (state, action )=> {
@@ -25,16 +25,16 @@ export const userSlice = createSlice({
         formUserEdit: (state, action) => {
             state.formEdit = action.payload            
         },
-        editing: (state, action) => {
-            state.onEdit = action.payload
-            console.log(action.payload)
+        searhInput: (state, action) => {
+            state.searchTerm = action.payload
         }
+        
         
        
     }
 });
 
-export const { listUser, addUser, deleteUser, updateUser, formUserEdit} = userSlice.actions;
+export const { listUser, addUser, deleteUser, updateUser, formUserEdit, searhInput} = userSlice.actions;
 
 
 export default userSlice.reducer;
