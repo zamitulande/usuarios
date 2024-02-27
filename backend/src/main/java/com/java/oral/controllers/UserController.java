@@ -26,6 +26,8 @@ import com.java.oral.entities.User;
 import com.java.oral.error.UserNotFoundException;
 import com.java.oral.service.IUserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/user")
@@ -54,19 +56,21 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<UserDTO> save(@Validated @RequestBody UserDTO userDTO) throws URISyntaxException {
+    public ResponseEntity<UserDTO> save(@RequestBody @Valid UserDTO userDTO) {
+      
+             User savedUser = iUserService.save(User.builder()
+            .name(userDTO.getName())
+            .identification(userDTO.getIdentification())
+            .build());
+        
+            UserDTO savedUserDTO = new UserDTO();
+            savedUserDTO.setId(savedUser.getId());
+            savedUserDTO.setName(savedUser.getName());
+            savedUserDTO.setIdentification(savedUser.getIdentification());
 
-        User savedUser = iUserService.save(User.builder()
-                .name(userDTO.getName())
-                .identification(userDTO.getIdentification())
-                .build());
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUserDTO);
+        
 
-        UserDTO savedUserDTO = new UserDTO();
-        savedUserDTO.setId(savedUser.getId());
-        savedUserDTO.setName(savedUser.getName());
-        savedUserDTO.setIdentification(savedUser.getIdentification());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUserDTO);
     }
 
     @GetMapping("/")
@@ -85,35 +89,33 @@ public class UserController {
         return ResponseEntity.ok(userpage);
     }
 
-    @GetMapping("/find/identification/{identification}")
-    public ResponseEntity<Page<UserDTO>> findByIdentification(@PathVariable String identification, @RequestParam(defaultValue = "0") int page,
+    @GetMapping("/filter/{identification}")
+    public ResponseEntity<Page<UserDTO>> findByIdentification(@PathVariable String identification,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) throws UserNotFoundException {
 
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<User> users = iUserService.findByPartialIdentification(identification, pageable);
-            
-            Page<UserDTO> userDTOsPage = users
-                    .map(user -> UserDTO.builder()
-                            .id(user.getId())
-                            .name(user.getName())
-                            .identification(user.getIdentification())
-                            .testimonies(user.getTestimonies())
-                            .build());
-                System.out.println(userDTOsPage);
-            if (!userDTOsPage.isEmpty()) {
-                return ResponseEntity.ok(userDTOsPage);
-            } else {
-                throw new UserNotFoundException("Usuario no encontrado");
-            }
-        } catch (NumberFormatException e) {
-            // Si la identificación no es un número válido, lanzar una excepción
-            throw new UserNotFoundException("Identificación no válida");
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = iUserService.findByPartialIdentification(identification, pageable);
+
+        Page<UserDTO> userDTOsPage = users
+                .map(user -> UserDTO.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .identification(user.getIdentification())
+                        .testimonies(user.getTestimonies())
+                        .build());
+        System.out.println(userDTOsPage);
+        if (!userDTOsPage.isEmpty()) {
+            return ResponseEntity.ok(userDTOsPage);
+        } else {
+            throw new UserNotFoundException("Usuario no encontrado");
         }
+
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO)
+            throws UserNotFoundException {
         Optional<User> userOption = iUserService.findById(id);
         if (userOption.isPresent()) {
             User user = userOption.get();

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.java.oral.entities.User;
 import com.java.oral.error.UserNotFoundException;
@@ -18,5 +19,5 @@ public interface IUserDAO {
 
     void deleteById(Long id);
 
-    Page<User> findByPartialIdentification(String identification, Pageable pageable) throws UserNotFoundException;
+    Page<User> findByPartialIdentification(String identification, Pageable pageable);
 }

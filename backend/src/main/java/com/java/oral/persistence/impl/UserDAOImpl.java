@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.java.oral.entities.User;
 import com.java.oral.error.UserNotFoundException;
@@ -30,7 +31,7 @@ public class UserDAOImpl implements IUserDAO {
     }
 
     @Override
-    public void save(User user) {
+    public void save(User user){
         userRepository.save(user);
     }
 
@@ -40,7 +41,7 @@ public class UserDAOImpl implements IUserDAO {
     }
 
     @Override
-    public Page<User> findByPartialIdentification(String identification, Pageable pageable)  throws UserNotFoundException{
+    public Page<User> findByPartialIdentification(String identification, Pageable pageable){
        return userRepository.findByPartialIdentification(identification, pageable);
     }
 

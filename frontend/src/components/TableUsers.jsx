@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { formUserEdit, listUser, searhInput, updateUser } from '../redux/features/user/userSlice';
+import { errorMessage, formUserEdit, listUser, searhInput, updateUser } from '../redux/features/user/userSlice';
 import clienteAxios from '../config/Axios';
 import Swal from 'sweetalert2';
 
@@ -11,7 +11,6 @@ const TableUsers = () => {
     const openModal = useSelector((state) => state.user.isUpdate)
     const searchTerm = useSelector((state) => state.user.searchTerm)
 
-    const [messageNotFound, setMessageNotFound] = useState('')
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
@@ -21,31 +20,33 @@ const TableUsers = () => {
 
     useEffect(() => {
         if (!searchTerm) {
-            clienteAxios.get(`user/?page=${currentPage}&size=10`)
-                .then(res => {
+            const fetchData = async () => {
+                try {
+                    const res = await clienteAxios.get(`user/?page=${currentPage}&size=10`);
                     dispatch(listUser(res.data.content));
                     setTotalPages(res.data.totalPages);
-                })
-                .catch(error => {
-                    console.log("error fetching user data " + error)
-                })
+                } catch (error) {
+                    console.log('error al cargar lista inicial ' + error)
+                }
+            }
+            fetchData();
         } else {
-            clienteAxios.get(`user/find/identification/${searchTerm}?page=${currentPage}&size=10`)
-                .then(res => {
+            const fetchDataFilter = async () => {
+                try {
+                    const res = await clienteAxios.get(`user/filter/${searchTerm}?page=${currentPage}&size=10`);
                     dispatch(listUser(res.data.content));
-                    setTotalPages(res.data.totalPages);                    
-                })
-                .catch(error => {
-                    setMessageNotFound(error.response.data.message);
+                    setTotalPages(res.data.totalPages);
+                } catch (error) {
                     Swal.fire({
                         icon: "error",
-                        title: "El usuario no se encontro.",
+                        title: error.response.data.message,
                         text: "Revisa tu busqueda"
                     });
                     dispatch(searhInput(''))
-                })
-        }
-
+                }
+            }
+            fetchDataFilter();
+        }       
     }, [currentPage, searchTerm])
 
     const nextPage = () => {
@@ -99,12 +100,16 @@ const TableUsers = () => {
         dispatch(updateUser(!openModal))
     }
 
+    const handleOnclick = () => {
+        setCurrentPage(0)
+    }
+
     return (
         <>
             <form >
                 <label>
                     search
-                    <input type="text" name="shareUser" value={searchTerm} onChange={handleOnChange} />
+                    <input type="number" name="shareUser" value={searchTerm} onClick={handleOnclick} onChange={handleOnChange} />
                 </label>
             </form>
             <table>

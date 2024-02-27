@@ -11,8 +11,8 @@ import com.java.oral.error.UserNotFoundException;
 public interface IUserService {
 
     Page<User> findAll(Pageable pageable);
-    Optional<User> findById(Long id);
+    Optional<User> findById(Long id) ;
     User save(User user);
     void deleteById(Long id);
-    Page<User> findByPartialIdentification(String identification, Pageable pageable) throws UserNotFoundException;
+    Page<User> findByPartialIdentification(String identification, Pageable pageable);
 }

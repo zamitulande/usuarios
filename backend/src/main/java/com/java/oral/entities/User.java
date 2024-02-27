@@ -32,7 +32,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Campo no debe estar vacio")
     private String identification;
     private String name;
 
