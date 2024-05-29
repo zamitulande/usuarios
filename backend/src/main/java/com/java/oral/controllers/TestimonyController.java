@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.java.oral.controllers.Dto.TestimonyDTO;
 import com.java.oral.controllers.Dto.UserDTO;
@@ -30,56 +34,65 @@ public class TestimonyController {
     private ITestimonyService iTestimonyService;
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id){
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         Optional<Testimony> testimonyOption = iTestimonyService.findById(id);
 
         if (testimonyOption.isPresent()) {
             Testimony testimony = testimonyOption.get();
 
             TestimonyDTO testimonyDTO = TestimonyDTO.builder()
-                                                .id(testimony.getId())
-                                                .category(testimony.getCategory())
-                                                .section(testimony.getSection())
-                                                .user(testimony.getUser())
-                                                .build();
+                    .id(testimony.getId())
+                    .category(testimony.getCategory())
+                    .section(testimony.getSection())
+                    .user(testimony.getUser())
+                    .build();
 
-                                return ResponseEntity.ok(testimonyDTO);
+            return ResponseEntity.ok(testimonyDTO);
         }
         return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/findall")
-    public ResponseEntity<?> findAll(){
+    public ResponseEntity<?> findAll() {
         List<TestimonyDTO> testimonylist = iTestimonyService.findAll(null)
-                                            .stream()
-                                            .map(testimony -> TestimonyDTO.builder()
-                                                            .id(testimony.getId())
-                                                            .category(testimony.getCategory())
-                                                            .section(testimony.getSection())
-                                                            .user(testimony.getUser())
-                                                            .build())
-                                                        .toList();
-                    return ResponseEntity.ok(testimonylist);
+                .stream()
+                .map(testimony -> TestimonyDTO.builder()
+                        .id(testimony.getId())
+                        .category(testimony.getCategory())
+                        .section(testimony.getSection())
+                        .user(testimony.getUser())
+                        .build())
+                .toList();
+        return ResponseEntity.ok(testimonylist);
+    }
+
+    
+    @PostMapping("/uploadFile")
+    public String submit(@RequestParam("file") MultipartFile file, ModelMap modelMap) {
+        modelMap.addAttribute("file", file);
+
+        System.out.println("====="+ file);
+        return "fileUploadView";
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody TestimonyDTO testimonyDTO) throws URISyntaxException{
+    public ResponseEntity<?> save(@RequestBody TestimonyDTO testimonyDTO) throws URISyntaxException {
         if (testimonyDTO.getCategory().isBlank() || testimonyDTO.getCategory().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         Testimony testimony = Testimony.builder()
-                            .category(testimonyDTO.getCategory())
-                            .section(testimonyDTO.getSection())
-                            .user(testimonyDTO.getUser())
-                            .build();
+                .category(testimonyDTO.getCategory())
+                .section(testimonyDTO.getSection())
+                .user(testimonyDTO.getUser())
+                .build();
 
-                iTestimonyService.save(testimony);
+        iTestimonyService.save(testimony);
 
         return ResponseEntity.created(new URI("/api/testimony")).build();
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TestimonyDTO testimonyDTO){
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TestimonyDTO testimonyDTO) {
         Optional<Testimony> testimonyOption = iTestimonyService.findById(id);
 
         if (testimonyOption.isPresent()) {
@@ -93,7 +106,7 @@ public class TestimonyController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable Long id){
+    public ResponseEntity<?> deleteById(@PathVariable Long id) {
         if (id != null) {
             iTestimonyService.deleteById(id);
             return ResponseEntity.ok("register delete");

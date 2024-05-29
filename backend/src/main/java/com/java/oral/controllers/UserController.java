@@ -29,7 +29,7 @@ import com.java.oral.service.IUserService;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://192.168.20.8:3000")
 @RequestMapping("/api/user")
 public class UserController {
 
